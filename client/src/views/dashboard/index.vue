@@ -102,6 +102,7 @@ export default {
   methods: {
     handleSuccess({ results, header }) {
       this.tableVisible = false
+      this.list = null
       this.$notify({
         title: 'Thành công',
         message: 'Upload file excel thành công',
