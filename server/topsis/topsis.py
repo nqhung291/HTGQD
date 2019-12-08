@@ -115,8 +115,8 @@ class TOPSIS():
                 self.rank[i] = R_pos[i] / (R_pos[i] + R_neg[i])
     def run(self):
         self.ranking()
-        print('Ranking:', self.rank)
-        top = np.argmax(self.rank)
-        down = np.argmin(self.rank)
-        print("Best: %d" % (top + 1))
-        print("Worst: %d" % (down + 1))
+        # print('Ranking:', self.rank)
+        # top = np.argmax(self.rank)
+        # down = np.argmin(self.rank)
+        # print("Best: %d" % (top + 1))
+        # print("Worst: %d" % (down + 1))
