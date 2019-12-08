@@ -8,10 +8,6 @@ import Layout from '@/layout'
 
 export const constantRoutes = [
   {
-    path: '/login',
-    component: () => import('@/views/login/index')
-  },
-  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
@@ -21,30 +17,6 @@ export const constantRoutes = [
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
         meta: { title: 'Trang chủ', icon: 'dashboard', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/repository',
-    component: Layout,
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/repository'),
-        name: 'Icon',
-        meta: { title: 'Tủ đồ', icon: 'theme', noCache: true }
-      }
-    ]
-  },
-  {
-    path: '/history',
-    component: Layout,
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/history'),
-        name: 'History',
-        meta: { title: 'Lịch sử giao dịch', icon: 'list', noCache: true }
       }
     ]
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload" />
+    <upload-excel-component :on-success="handleSuccess" />
   </div>
 </template>
 
@@ -16,19 +16,6 @@ export default {
     }
   },
   methods: {
-    beforeUpload(file) {
-      const isLt1M = file.size / 1024 / 1024 < 1
-
-      if (isLt1M) {
-        return true
-      }
-
-      this.$message({
-        message: 'Please do not upload files larger than 1m in size.',
-        type: 'warning'
-      })
-      return false
-    },
     handleSuccess({ results, header }) {
       console.log(results)
       uploadInfo(results).then((res) => {
@@ -37,7 +24,7 @@ export default {
           title: 'Thành công',
           message: 'Upload file excel thành công',
           type: 'success',
-          duration: 2000
+          duration: 3000
         })
       })
     }
