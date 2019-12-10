@@ -1,11 +1,9 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from topsis import topsis
-import numpy as np
 import json
+import numpy as np
+from flask import request, jsonify
+from app import app
+from topsis import topsis
 
-app = Flask(__name__)
-CORS(app)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -37,7 +35,3 @@ def upload_file():
         'data': result
     }
     return jsonify(res)
-
-
-if __name__ == '__main__':
-    app.run()
