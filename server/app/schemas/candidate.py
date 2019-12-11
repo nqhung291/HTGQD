@@ -27,16 +27,16 @@ candidate_schema = {
         "attitude": {
             "type": "number"
         },
-        "teamWork": {
+        "team_work": {
             "type": "number"
         },
-        "communicationSkill": {
+        "communication_skill": {
             "type": "number"
         },
         "experience": {
             "type": "number"
         },
-        "salaryRange": {
+        "salary_range": {
             "type": "object",
             "properties": {
                 "min": {
@@ -59,18 +59,28 @@ candidate_schema = {
         "gpa",
         "english",
         "university",
-        "attitude",
-        "teamWork",
-        "communicationSkill",
-        "experience",
-        "salaryRange"
-    ]
+        "salary_range"
+    ],
+    "additionalProperties": {"type": "number"}
 }
+
+
+def set_default(data):
+    if data.get('gpa'):
+        data['gpa'] *= 2.5
+    if data.get('english'):
+        data['english'] /= 100
+
+    data['attitude'] = data.get('attitude', 0)
+    data['team_work'] = data.get('team_work', 0)
+    data['communication_skill'] = data.get('communication_skill', 0)
+    data['experience'] = data.get('experience', 0)
+    return data
 
 
 def validate_candidate(data):
     try:
-        validate(data, candidate_schema)
+        validate(set_default(data), candidate_schema)
     except ValidationError as e:
         return {'ok': False, 'message': e}
     except SchemaError as e:
