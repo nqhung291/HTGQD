@@ -8,6 +8,16 @@ import Layout from '@/layout'
 
 export const constantRoutes = [
   {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/auth-redirect',
+    component: () => import('@/views/login/auth-redirect'),
+    hidden: true
+  },
+  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
@@ -17,6 +27,18 @@ export const constantRoutes = [
         component: () => import('@/views/dashboard/index'),
         name: 'Dashboard',
         meta: { title: 'Trang chủ', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/candidate',
+    component: Layout,
+    children: [
+      {
+        path: 'candidate',
+        component: () => import('@/views/candidate/index'),
+        name: 'Candidate',
+        meta: { title: 'Đăng ký thông tin ứng viên', icon: 'people', affix: true }
       }
     ]
   }

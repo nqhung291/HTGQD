@@ -36,20 +36,11 @@ candidate_schema = {
         "experience": {
             "type": "number"
         },
-        "salary_range": {
-            "type": "object",
-            "properties": {
-                "min": {
-                    "type": "number"
-                },
-                "max": {
-                    "type": "number"
-                }
-            },
-            "required": [
-                "min",
-                "max"
-            ]
+        "salary": {
+            "type": "number"
+        },
+        "is_rated": {
+            "type": "boolean"
         }
     },
     "required": [
@@ -59,22 +50,24 @@ candidate_schema = {
         "gpa",
         "english",
         "university",
-        "salary_range"
+        "salary"
     ],
     "additionalProperties": {"type": "number"}
 }
 
 
 def set_default(data):
-    if data.get('gpa'):
-        data['gpa'] *= 2.5
-    if data.get('english'):
-        data['english'] /= 100
+    # rating
+    # if data.get('gpa'):
+    #     data['gpa'] *= 2.5
+    # if data.get('english'):
+    #     data['english'] /= 100
 
     data['attitude'] = data.get('attitude', 0)
     data['team_work'] = data.get('team_work', 0)
     data['communication_skill'] = data.get('communication_skill', 0)
     data['experience'] = data.get('experience', 0)
+    data['is_rated'] = data.get('is_rated', False)
     return data
 
 

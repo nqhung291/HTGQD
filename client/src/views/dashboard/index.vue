@@ -1,8 +1,35 @@
 <template>
   <div class="app-container">
-    <upload-excel-component :on-success="handleSuccess" />
-    <div v-show="tableVisible" class="result-table-container" style="margin-top: 20px">
-      <h1 class="text-center">Bảng xếp hạng</h1>
+    <div class="filter-container">
+      <el-row :gutter="15">
+        <el-col :md="8" :sm="12" :xs="24">
+          <el-input v-model="listQuery.name" placeholder="Họ và tên" class="filter-item" @keyup.enter.native="handleFilter" />
+        </el-col>
+        <el-col :md="8" :sm="12" :xs="24">
+          <el-input v-model="listQuery.major" placeholder="Chuyên ngành" class="filter-item" @keyup.enter.native="handleFilter" />
+        </el-col>
+        <el-col :md="8" :sm="12" :xs="24">
+          <el-input v-model="listQuery.gpa" placeholder="GPA" class="filter-item" @keyup.enter.native="handleFilter" />
+        </el-col>
+        <el-col :md="8" :sm="12" :xs="24">
+          <el-input v-model="listQuery.english" placeholder="Tiếng anh" class="filter-item" @keyup.enter.native="handleFilter" />
+        </el-col>
+        <el-col :md="8" :sm="12" :xs="24">
+          <el-input v-model="listQuery.university" placeholder="Đại học" class="filter-item" @keyup.enter.native="handleFilter" />
+        </el-col>
+        <el-col :md="8" :sm="12" :xs="24">
+          <el-input v-model="listQuery.salary" placeholder="Mức lương mong muốn" class="filter-item" @keyup.enter.native="handleFilter" />
+        </el-col>
+        <el-col :span="24" style="text-align: right">
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+            Tìm kiếm
+          </el-button>
+        </el-col>
+      </el-row>
+    </div>
+
+    <div class="result-table-container" style="margin-top: 20px">
+      <h1 class="text-center">Danh sách ứng viên</h1>
       <el-table
         :key="tableKey"
         v-loading="listLoading"
@@ -12,69 +39,39 @@
         highlight-current-row
         style="width: 100%;"
       >
-        <el-table-column label="Xếp hạng" prop="id" align="center" width="100">
-          <template slot-scope="{row}">
-            <span>{{ row.rank }}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="Họ và tên" min-width="200" align="center">
           <template slot-scope="{row}">
             <span>{{ row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Số điểm" align="center" width="100">
+        <el-table-column label="Email" min-width="200" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.point }}</span>
+            <span>{{ row.email }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Điểm 1" width="90" align="center">
+        <el-table-column label="Chuyên ngành" min-width="200" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.point1 }}</span>
+            <span>{{ row.major }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Điểm 2" align="center" width="90">
+        <el-table-column label="GPA (/10)" min-width="200" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.point2 }}</span>
+            <span>{{ row.gpa }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Điểm 3" align="center" width="90">
+        <el-table-column label="Điểm TOEIC (/10)" min-width="200" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.point3 }}</span>
+            <span>{{ row.english }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Điểm 4" align="center" width="90">
+        <el-table-column label="Đại học" min-width="200" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.point4 }}</span>
+            <span>{{ row.university }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Điểm 5" align="center" width="90">
+        <el-table-column label="Mức lương mong muốn ($)" min-width="200" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.point5 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Điểm 6" align="center" width="90">
-          <template slot-scope="{row}">
-            <span>{{ row.point6 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Điểm 7" align="center" width="90">
-          <template slot-scope="{row}">
-            <span>{{ row.point7 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Điểm 8" align="center" width="90">
-          <template slot-scope="{row}">
-            <span>{{ row.point8 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Điểm 9" align="center" width="90">
-          <template slot-scope="{row}">
-            <span>{{ row.point9 }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Điểm 10" align="center" width="90">
-          <template slot-scope="{row}">
-            <span>{{ row.point10 }}</span>
+            <span>{{ row.salary }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -84,39 +81,45 @@
 </template>
 
 <script>
-import UploadExcelComponent from '@/components/UploadExcel/index.vue'
-import { uploadInfo } from '@/api/excel'
-import { mappingObject } from '@/utils/mapping'
+import waves from '@/directive/waves'
+import { fetchCandidateList } from '@/api/candidate'
 
 export default {
-  name: 'UploadExcel',
-  components: { UploadExcelComponent },
+  directives: { waves },
   data() {
     return {
       tableKey: 0,
       list: null,
       listLoading: true,
-      tableVisible: false
+      total: 0,
+      tableVisible: false,
+      listQuery: {
+        // page: 1,
+        // page_size: 10,
+        name: undefined,
+        major: undefined,
+        gpa: undefined,
+        english: undefined,
+        university: undefined,
+        salary: undefined
+      }
     }
   },
+  created() {
+    this.getList()
+  },
   methods: {
-    handleSuccess({ results, header }) {
-      this.tableVisible = false
-      this.list = null
-      this.$notify({
-        title: 'Thành công',
-        message: 'Upload file excel thành công',
-        type: 'success',
-        duration: 3000
-      })
-      // mapping object
-      const requestData = mappingObject(results)
-      uploadInfo(requestData).then((response) => {
-        console.log(response)
-        this.list = response.data.data
+    getList() {
+      this.listLoading = true
+      fetchCandidateList(this.listQuery).then(response => {
+        this.list = response.data
+        this.total = this.list.length
         this.listLoading = false
-        this.tableVisible = true
       })
+    },
+    handleFilter() {
+      // this.listQuery.page = 1,
+      this.getList()
     }
   }
 }

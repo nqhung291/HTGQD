@@ -9,7 +9,25 @@ import json
 def candidate_list():
     if request.method == 'GET':
         query = request.args
-        result = mongo.db.htgqd.find(query)
+        query_db = remove_empty_query(query)
+        if query_db:
+            query_str = dict()
+            if query_db.get('name'):
+                query_str['name'] = {'$regex': str(query_db.get('name')), '$options': 'i'}
+            if query_db.get('gpa'):
+                query_str['gpa'] = {'$gte': float(query_db.get('gpa'))}
+            if query_db.get('english'):
+                query_str['english'] = {'$gte': float(query_db.get('english'))}
+            if query_db.get('major'):
+                query_str['major'] = {'$regex': str(query_db.get('major')), '$options': 'i'}
+            if query_db.get('university'):
+                query_str['university'] = {'$regex': str(query_db.get('university')), '$options': 'i'}
+            if query_db.get('salary'):
+                query_str['salary'] = {'$lte': float(query_db.get('salary'))}
+
+            result = mongo.db.htgqd.find(query_str)
+        else:
+            result = mongo.db.htgqd.find({})
         return_data = [person for person in result]
         return json.dumps(return_data, default=json_util.default), 200
 
@@ -31,12 +49,25 @@ def candidate(candidate_id):
 
     data = json.loads(request.data, encoding='utf-8')
     if request.method == 'PUT':
-        mongo.db.htgqd.find_one_and_update({'_id': ObjectId(oid=str(candidate_id))}, {
-            '$set': {
-                'attitude': data['attitude'],
-                'team_work': data['team_work'],
-                'communication_skill': data['communication_skill'],
-                'experience': data['experience']
-            }
-        })
-        return jsonify({'code': '00', 'message': 'Candidate updated successfully'})
+        try:
+            mongo.db.htgqd.find_one_and_update({'_id': ObjectId(oid=str(candidate_id))}, {
+                '$set': {
+                    'attitude': data['attitude'],
+                    'team_work': data['team_work'],
+                    'communication_skill': data['communication_skill'],
+                    'experience': data['experience'],
+                    'is_rated': True
+                }
+            })
+            return jsonify({'code': '00', 'message': 'Candidate updated successfully'})
+        except Exception as e:
+            print(e)
+            return jsonify({'code': '99', 'message': 'Error'})
+
+
+def remove_empty_query(query):
+    query_db = {}
+    for k, v in query.items():
+        if v:
+            query_db[k] = v
+    return query_db
