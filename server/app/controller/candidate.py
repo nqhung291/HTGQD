@@ -24,8 +24,13 @@ def candidate_list():
                 query_str['university'] = {'$regex': str(query_db.get('university')), '$options': 'i'}
             if query_db.get('salary'):
                 query_str['salary'] = {'$lte': float(query_db.get('salary'))}
+            if query_db.get('is_rated'):
+                query_str['is_rated'] = bool(int(query_db.get('is_rated')))
 
+            # page_size = query.get('page_size', 10)
+            # page = query.get('page') - 1
             result = mongo.db.htgqd.find(query_str)
+            # total = result.cout()
         else:
             result = mongo.db.htgqd.find({})
         return_data = [person for person in result]

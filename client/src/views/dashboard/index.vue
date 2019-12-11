@@ -28,8 +28,8 @@
       </el-row>
     </div>
 
-    <div class="result-table-container" style="margin-top: 20px">
-      <h1 class="text-center">Danh sách ứng viên</h1>
+    <div class="table-container" style="margin-top: 20px">
+      <h1 class="text-center">Danh sách ứng viên chưa được đánh giá chi tiết</h1>
       <el-table
         :key="tableKey"
         v-loading="listLoading"
@@ -49,40 +49,69 @@
             <span>{{ row.email }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Chuyên ngành" min-width="200" align="center">
+        <el-table-column label="Chuyên ngành" min-width="150" align="center">
           <template slot-scope="{row}">
             <span>{{ row.major }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="GPA (/10)" min-width="200" align="center">
+        <el-table-column label="GPA" min-width="100" align="center">
           <template slot-scope="{row}">
             <span>{{ row.gpa }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Điểm TOEIC (/10)" min-width="200" align="center">
+        <el-table-column label="Điểm TOEIC" min-width="100" align="center">
           <template slot-scope="{row}">
             <span>{{ row.english }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Đại học" min-width="200" align="center">
+        <el-table-column label="Đại học" min-width="100" align="center">
           <template slot-scope="{row}">
             <span>{{ row.university }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="Mức lương mong muốn ($)" min-width="200" align="center">
+        <el-table-column label="Mức lương mong muốn ($)" min-width="150" align="center">
           <template slot-scope="{row}">
             <span>{{ row.salary }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="Đánh giá ứng viên" align="center" min-width="100" class-name="small-padding fixed-width">
+          <template slot-scope="{row}">
+            <el-button title="Đánh giá ứng viên" size="small" icon="el-icon-info" circle @click="handleRating(row)" />
+          </template>
+        </el-table-column>
       </el-table>
 
+      <el-dialog title="Đánh giá chi tiết ứng viên sau phỏng vấn" :visible.sync="dialogVisible">
+        <el-form ref="changeTeamForm" :rules="rule" :model="candidateAdditionalRating" label-position="left" label-width="200px">
+          <el-form-item label="Thái độ" prop="attitude">
+            <el-input-number v-model="candidateAdditionalRating.attitude" :min="0" :max="10" />
+          </el-form-item>
+          <el-form-item label="Kỹ năng làm việc nhóm" prop="team_work">
+            <el-input-number v-model="candidateAdditionalRating.team_work" :min="0" :max="10" />
+          </el-form-item>
+          <el-form-item label="Kỹ năng giao tiếp" prop="communication_skill">
+            <el-input-number v-model="candidateAdditionalRating.communication_skill" :min="0" :max="10" />
+          </el-form-item>
+          <el-form-item label="Kinh nghiệm làm việc" prop="experience">
+            <el-input-number v-model="candidateAdditionalRating.experience" :min="0" :max="10" />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="handleCloseDialog">
+            Cancel
+          </el-button>
+          <el-button type="primary" @click="handleUpdateCandidate()">
+            Confirm
+          </el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
 import waves from '@/directive/waves'
-import { fetchCandidateList } from '@/api/candidate'
+import { fetchCandidateList, updateCandidate } from '@/api/candidate'
 
 export default {
   directives: { waves },
@@ -93,15 +122,66 @@ export default {
       listLoading: true,
       total: 0,
       tableVisible: false,
+      dialogVisible: false,
       listQuery: {
-        // page: 1,
-        // page_size: 10,
+        page: 1,
+        page_size: 10,
         name: undefined,
         major: undefined,
         gpa: undefined,
         english: undefined,
         university: undefined,
-        salary: undefined
+        salary: undefined,
+        is_rated: 0
+      },
+      candidateAdditionalRating: {
+        attitude: 0,
+        team_work: 0,
+        communication_skill: 0,
+        experience: 0
+      },
+      rowId: undefined,
+      rule: {
+        attitude: [
+          {
+            required: true,
+            type: 'number',
+            message: 'Không được bỏ trống và phải đánh giá trên thang điểm 10',
+            minimum: 0,
+            maximum: 10,
+            trigger: 'change'
+          }
+        ],
+        team_work: [
+          {
+            required: true,
+            type: 'number',
+            message: 'Không được bỏ trống và phải đánh giá trên thang điểm 10',
+            minimum: 0,
+            maximum: 10,
+            trigger: 'change'
+          }
+        ],
+        communication_skill: [
+          {
+            required: true,
+            type: 'number',
+            message: 'Không được bỏ trống và phải đánh giá trên thang điểm 10',
+            minimum: 0,
+            maximum: 10,
+            trigger: 'change'
+          }
+        ],
+        experience: [
+          {
+            required: true,
+            type: 'number',
+            message: 'Không được bỏ trống và phải đánh giá trên thang điểm 10',
+            minimum: 0,
+            maximum: 10,
+            trigger: 'change'
+          }
+        ]
       }
     }
   },
@@ -109,6 +189,15 @@ export default {
     this.getList()
   },
   methods: {
+    resetData() {
+      this.rowId = undefined
+      this.candidateAdditionalRating = {
+        attitude: 0,
+        team_work: 0,
+        communication_skill: 0,
+        experience: 0
+      }
+    },
     getList() {
       this.listLoading = true
       fetchCandidateList(this.listQuery).then(response => {
@@ -120,6 +209,28 @@ export default {
     handleFilter() {
       // this.listQuery.page = 1,
       this.getList()
+    },
+    handleRating(row) {
+      this.resetData()
+      this.$nextTick(() => {
+        this.$refs['changeTeamForm'].clearValidate()
+      })
+      this.dialogVisible = true
+      this.rowId = row._id.$oid
+    },
+    handleCloseDialog() {
+      this.resetData()
+      this.dialogVisible = false
+    },
+    handleUpdateCandidate() {
+      this.$refs['changeTeamForm'].validate((valid) => {
+        console.log('valid')
+        updateCandidate(this.rowId, this.candidateAdditionalRating).then(response => {
+          this.resetData()
+          this.dialogVisible = false
+          this.getList()
+        })
+      })
     }
   }
 }

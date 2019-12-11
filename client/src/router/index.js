@@ -41,6 +41,18 @@ export const constantRoutes = [
         meta: { title: 'Đăng ký thông tin ứng viên', icon: 'people', affix: true }
       }
     ]
+  },
+  {
+    path: '/ranking',
+    component: Layout,
+    children: [
+      {
+        path: 'ranking',
+        component: () => import('@/views/ranking/index'),
+        name: 'Ranking',
+        meta: { title: 'Xếp loại ứng viên', icon: 'peoples', affix: true }
+      }
+    ]
   }
 ]
 
