@@ -1,4 +1,4 @@
-from flask import request, jsonify, Response
+from flask import request, jsonify
 from app import app, mongo
 from app.schemas import validate_candidate
 from bson import json_util, ObjectId
