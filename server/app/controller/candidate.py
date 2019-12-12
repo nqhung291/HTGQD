@@ -70,6 +70,19 @@ def candidate(candidate_id):
             return jsonify({'code': '99', 'message': 'Error'})
 
 
+@app.route("/university", methods=['GET', 'POST'])
+def univesityList():
+    if request.method == 'GET':
+        db_result = mongo.db.university.find({})
+        data = [university for university in db_result]
+        return json.dumps(data, default=json_util.default), 200
+    if request.method == 'POST':
+        data = json.loads(request.data, encoding='utf-8')
+        print(data)
+        mongo.db.university.insert_many(data['university'])
+        return jsonify({'code': '00', 'message': 'University added successfully'})
+
+
 def remove_empty_query(query):
     query_db = {}
     for k, v in query.items():

@@ -15,7 +15,9 @@
           <el-input v-model="listQuery.english" placeholder="Tiếng anh" class="filter-item" @keyup.enter.native="handleFilter" />
         </el-col>
         <el-col :md="8" :sm="12" :xs="24">
-          <el-input v-model="listQuery.university" placeholder="Đại học" class="filter-item" @keyup.enter.native="handleFilter" />
+          <el-select v-model="listQuery.university" placeholder="--- Chọn đại học ---" clearable filterable class="filter-item full-width" @focus="getListUniversity">
+            <el-option v-for="(item, index) in universityData" :key="index" :label="item.name" :value="item.name" />
+          </el-select>
         </el-col>
         <el-col :md="8" :sm="12" :xs="24">
           <el-input v-model="listQuery.salary" placeholder="Mức lương mong muốn" class="filter-item" @keyup.enter.native="handleFilter" />
@@ -112,6 +114,7 @@
 <script>
 import waves from '@/directive/waves'
 import { fetchCandidateList, updateCandidate } from '@/api/candidate'
+import { fetchUniverisy } from '@/api/university'
 
 export default {
   directives: { waves },
@@ -182,7 +185,8 @@ export default {
             trigger: 'change'
           }
         ]
-      }
+      },
+      universityData: null
     }
   },
   created() {
@@ -230,6 +234,12 @@ export default {
           this.dialogVisible = false
           this.getList()
         })
+      })
+    },
+    getListUniversity() {
+      fetchUniverisy().then(response => {
+        console.log(response.data)
+        this.universityData = response.data
       })
     }
   }

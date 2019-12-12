@@ -25,7 +25,10 @@
             <el-input v-model="candidateQuery.name" placeholder="Họ và tên" class="filter-item" @keyup.enter.native="handleFilter" />
           </el-col>
           <el-col :md="8" :sm="12" :xs="24">
-            <el-input v-model="candidateQuery.university" placeholder="Đại học" class="filter-item" @keyup.enter.native="handleFilter" />
+            <!-- <el-input v-model="candidateQuery.university" placeholder="Đại học" class="filter-item" @keyup.enter.native="handleFilter" /> -->
+            <el-select v-model="candidateQuery.university" placeholder="--- Chọn đại học ---" clearable filterable class="filter-item full-width" @focus="getListUniversity">
+              <el-option v-for="(item, index) in universityData" :key="index" :label="item.name" :value="item.name" />
+            </el-select>
           </el-col>
           <el-col :md="8" :sm="12" :xs="24">
             <el-input v-model="candidateQuery.major" placeholder="Chuyên ngành" class="filter-item" @keyup.enter.native="handleFilter" />
@@ -154,6 +157,8 @@ import SelectedCandidate from './components/SelectedCandidate'
 import waves from '@/directive/waves'
 import { fetchCandidateList } from '@/api/candidate'
 import { fetchRank } from '@/api/ranking'
+import { fetchUniverisy } from '@/api/university'
+
 export default {
   directives: { waves },
   components: { SelectedCandidate },
@@ -164,6 +169,7 @@ export default {
       total: 0,
       totalCandidate: 0,
       listLoading: true,
+      universityData: null,
       candidateQuery: {
         // page: 1,
         // page_size: 10,
@@ -212,8 +218,12 @@ export default {
     handleRanking() {
       fetchRank(this.listSelectedCandidate).then(response => {
         this.listRanking = response.data.data
-        console.log(this.listRanking)
         this.rankingDialogVisible = true
+      })
+    },
+    getListUniversity() {
+      fetchUniverisy().then(response => {
+        this.universityData = response.data
       })
     }
   }

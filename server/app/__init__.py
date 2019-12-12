@@ -22,7 +22,8 @@ class JsonResponse(Response):
 # create the flask app
 app = Flask(__name__)
 CORS(app)
-app.config['MONGO_URI'] = 'mongodb://root:pass123@ds253418.mlab.com:53418/htgqd?retryWrites=false'
+app.config['MONGO_URI'] = 'mongodb://172.17.0.2:27017/htgqd?retryWrites=false'
+# app.config['MONGO_URI'] = 'mongodb://root:pass123@ds253418.mlab.com:53418/htgqd?retryWrites=false'
 mongo = PyMongo(app)
 app.json_decoder = MongoEngineJSONEncoder
 app.response_class = JsonResponse

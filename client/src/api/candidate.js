@@ -15,3 +15,11 @@ export function updateCandidate(id, data) {
     data
   })
 }
+
+export function createCandidate(data) {
+  return axios({
+    method: 'post',
+    url: 'http://127.0.0.1:5000/candidate',
+    data
+  })
+}
